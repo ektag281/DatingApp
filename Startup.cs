@@ -28,7 +28,7 @@ namespace DatingApp.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddCors();
             services.AddDbContext<DataContext>(options =>
             {
                 options.UseSqlite(_config.GetConnectionString("defaultConnection"));
@@ -53,6 +53,9 @@ namespace DatingApp.Api
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            //Allowing Every Heards and Every Methods but only ordgin localhost 4200
+            app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200"));
 
             app.UseAuthorization();
 
