@@ -46,7 +46,7 @@ namespace DatingApp.Api.Data
             return await _context.Users.FindAsync(id);
         }
 
-        public async Task<AppUser> GetUserByUsername(string username)
+        public async Task<AppUser> GetUserByUsernameAsync(string username)
         {
             return await _context.Users
                                 .Include(c => c.Photos).SingleOrDefaultAsync(c => c.UserName == username);
