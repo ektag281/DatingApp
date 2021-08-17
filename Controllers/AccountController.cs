@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -49,7 +50,7 @@ namespace DatingApp.Api.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto login)
         {
-            var user = await _context.Users.SingleOrDefaultAsync(c => c.UserName == login.Username);
+            var user = await _context.Users.Include(c => c.Photos).SingleOrDefaultAsync(c => c.UserName == login.Username);
 
             if(user == null) return Unauthorized("Invalid Username");
 
@@ -64,7 +65,8 @@ namespace DatingApp.Api.Controllers
 
             return new UserDto{
                 Username = user.UserName,
-                Token = _tokenService.CreateToken(user)
+                Token = _tokenService.CreateToken(user),
+                PhotoUrl = user.Photos.FirstOrDefault(c => c.IsMain)?.Url
             };
         }
 
