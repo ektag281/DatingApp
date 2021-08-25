@@ -1,11 +1,16 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace DatingApp.Api.DTOs
 {
     public class RegisterDto
     {
-        [Required]
-        public string Username { get; set; }
+        [Required] public string Username { get; set; }
+        [Required] public string Gender { get; set; }
+        [Required] public string KnowAs { get; set; }
+        [Required] public string DateOfBirth { get; set; }
+        [Required] public string City { get; set; }
+        [Required] public string Country { get; set; }
 
         [Required]
         [StringLength(8, MinimumLength = 4)]
