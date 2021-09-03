@@ -27,8 +27,9 @@ namespace DatingApp.Api.Services
             //Putting claim inside this token
             var claims = new List<Claim>
             {
+                new Claim(JwtRegisteredClaimNames.NameId,user.Id.ToString()),
                 //Nameid used to store username
-                new Claim(JwtRegisteredClaimNames.NameId,user.UserName)
+                new Claim(JwtRegisteredClaimNames.UniqueName,user.UserName)
             };
 
             //Create Credntial

@@ -7,6 +7,7 @@ using DatingApp.Api.Data;
 using DatingApp.Api.DTOs;
 using DatingApp.Api.Entities;
 using DatingApp.Api.Extensions;
+using DatingApp.Api.Helpers;
 using DatingApp.Api.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -30,12 +31,21 @@ namespace DatingApp.Api.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-
-        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery]UserParams userParams)
         {
-            var user = await _userRespository.GetMembersAsync();
+            var user = await _userRespository.GetUserByUsernameAsync(User.GetUserName());
+            userParams.CurrentUserName = user.UserName;
 
-            return Ok(user);
+            if(string.IsNullOrEmpty(userParams.Gender))
+            {
+                userParams.Gender = user.Gender == "male" ? "female" : "male";
+            }
+
+            var users = await _userRespository.GetMembersAsync(userParams);
+
+            Response.AddPaginationHeader(users.CurrentPage,users.PageSize,
+            users.TotalCounts,users.TotalPages);
+            return Ok(users);
         }
 
         //[Authorize]

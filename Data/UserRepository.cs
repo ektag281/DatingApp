@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -5,7 +6,9 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using DatingApp.Api.DTOs;
 using DatingApp.Api.Entities;
+using DatingApp.Api.Helpers;
 using DatingApp.Api.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace DatingApp.Api.Data
@@ -28,11 +31,37 @@ namespace DatingApp.Api.Data
             .SingleOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<MemberDto>> GetMembersAsync()
+        public async Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams)
         {
-            return await _context.Users
-            .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
-            .ToListAsync();
+            // var query =  _context.Users
+            // .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
+            // .AsNoTracking()
+            // .AsQueryable();
+            //   return await PagedList<MemberDto>.CreateAsync(
+            //     query,
+            //     userParams.PageNumber,userParams.PageSize);
+
+            var query = _context.Users.AsQueryable();
+
+            query = query.Where(u => u.UserName != userParams.CurrentUserName);
+            query = query.Where(u => u.Gender == userParams.Gender);
+
+            var minDOB = DateTime.Today.AddYears(-userParams.MaxAge - 1);
+            var maxDOB = DateTime.Today.AddYears(-userParams.MinAge);
+
+            query = query.Where(c => c.DateOfBirth >= minDOB && c.DateOfBirth <= maxDOB);
+
+            query = userParams.OrderBy switch
+            {
+                "created" => query.OrderByDescending(c => c.Created),//Create is case -1 
+                _ => query.OrderByDescending(c => c.LastActive), // this is default statement in c# 8
+            };
+            return await PagedList<MemberDto>.CreateAsync(
+                query.ProjectTo<MemberDto>(_mapper.ConfigurationProvider).
+                AsNoTracking(),
+                userParams.PageNumber,userParams.PageSize);
+
+           
         }
 
         public async Task<IEnumerable<AppUser>> GetUserAsync()
