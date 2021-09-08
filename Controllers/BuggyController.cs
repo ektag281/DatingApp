@@ -42,7 +42,7 @@ namespace DatingApp.Api.Controllers
         [HttpGet("bad-request")]
         //[Authorize]
         public ActionResult<string> GetBadRequest(){
-            return BadRequest("This is not the good request");
+            return BadRequest();
         }
 
     }
