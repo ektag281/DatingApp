@@ -11,6 +11,7 @@ namespace DatingApp.Api.Data
 
         public DbSet<AppUser> Users { get; set; }
         public DbSet<UserLike> Likes { get; set; }
+        public DbSet<Message> Messages { get; set; }
 
         //Configuration with user to like table
         protected override void OnModelCreating(ModelBuilder builder)
@@ -34,6 +35,16 @@ namespace DatingApp.Api.Data
             .WithMany(l => l.LikedByUsers) //Here we are saying source user can like many user
             .HasForeignKey(s => s.LikedUserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Message>()
+            .HasOne(u => u.Recipient)
+            .WithMany(m => m.MessagesReceived)
+            .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Message>()
+            .HasOne(u => u.Sender)
+            .WithMany(m => m.MessagesSent)
+            .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

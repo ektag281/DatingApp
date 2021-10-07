@@ -18,6 +18,7 @@ namespace DatingApp.Api.Extensions
             services.AddScoped<LogUserActivity>();
             services.AddScoped<IUserRepository,UserRepository>();
             services.AddScoped<ILikesRepository, LikesRepository>();
+            services.AddScoped<IMessageRepository, MessageRepositoy>();
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
 
             services.AddCors();
