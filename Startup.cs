@@ -20,6 +20,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using DatingApp.Api.Middileware;
+using DatingApp.Api.SignalR;
 
 namespace DatingApp.Api
 {
@@ -36,12 +37,23 @@ namespace DatingApp.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddApplicationServices(_config);
+
+            services.AddCors(options => 
+            { 
+                options.AddPolicy("CorsPolicy", builder => builder
+                .WithOrigins("https://localhost:4200")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials()); 
+            });
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "DatingApp.Api", Version = "v1" });
             });
             services.AddIdentityServices(_config);
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -61,7 +73,10 @@ namespace DatingApp.Api
 
             //Sequence matters first: Cors,Authentication,Authorization
             //Allowing Every Heards and Every Methods but only ordgin localhost 4200
-            app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200"));
+            app.UseCors(policy => policy.AllowAnyHeader()
+                                        .AllowAnyMethod()
+                                        .AllowCredentials()
+                                        .WithOrigins("https://localhost:4200"));
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -69,6 +84,8 @@ namespace DatingApp.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<PresenceHub>("hubs/presence");
+                endpoints.MapHub<MessageHub>("hubs/message");
             });
         }
     }
