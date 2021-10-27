@@ -48,8 +48,10 @@ namespace DatingApp.Api.SignalR
             var group = await AddToGroup(groupName);
             await Clients.Group(groupName).SendAsync("UpdatedGroup", group);
 
-            var messages = _messageRepository.GetMessageThread(Context.User.GetUserName(), otherUser);
+            var messages = await _messageRepository.GetMessageThread
+            (Context.User.GetUserName(), otherUser);
 
+            
             await Clients.Caller.SendAsync("ReceiveMessageThread", messages);
         }
 
