@@ -17,17 +17,17 @@ namespace DatingApp.Api.Helpers
 
             //Getting username
             //var username = resultContext.HttpContext.User.GetUserName();
-            //var repo = resultContext.HttpContext.RequestServices.GetService<IUserRepository>();
-            //var user = await repo.GetUserByUsernameAsync(username);
+            //var repo.user = resultContext.HttpContext.RequestServices.GetService<IUserRepo.usersitory>();
+            //var user = await repo.user.GetUserByUsernameAsync(username);
             //user.LastActive = DateTime.Now;
-            //await repo.SaveAllAsync();
+            //await repo.user.SaveAllAsync();
 
             //Getting userId
             var userId = resultContext.HttpContext.User.GetUserId();
-            var repo = resultContext.HttpContext.RequestServices.GetService<IUserRepository>();
-            var user = await repo.GetUserByIdAsync(userId);
-            user.LastActive = DateTime.Now;
-            await repo.SaveAllAsync();
+            var uow = resultContext.HttpContext.RequestServices.GetService<IUnitOfWork>();
+            var user = await uow.UserRepository.GetUserByIdAsync(userId);
+            user.LastActive = DateTime.UtcNow;
+            await uow.Complete();
         }
     }
 }

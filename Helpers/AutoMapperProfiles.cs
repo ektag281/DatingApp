@@ -34,7 +34,9 @@ namespace DatingApp.Api.Helpers
                     memberOptions => memberOptions.MapFrom(sourceMember =>
                     sourceMember.Recipient.Photos.FirstOrDefault(c => c.IsMain).Url));
 
-            CreateMap<DateTime, DateTime>().ConvertUsing(d => DateTime.SpecifyKind(d,DateTimeKind.Utc));
+            //Remove due to utec conversion mismetch while sending and reading messgaes and fot the same
+            //code is added inside DataContect class
+            //CreateMap<DateTime, DateTime>().ConvertUsing(d => DateTime.SpecifyKind(d,DateTimeKind.Utc));
         }
     }
 }

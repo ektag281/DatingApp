@@ -81,14 +81,15 @@ namespace DatingApp.Api.Data
                                 .Include(c => c.Photos).SingleOrDefaultAsync(c => c.UserName == username);
         }
 
-        public async Task<bool> SaveAllAsync()
-        {
-            return await _context.SaveChangesAsync() > 0;
-        }
-
         public void Update(AppUser appUser)
         {
             _context.Entry(appUser).State = EntityState.Modified;
+        }
+
+        public async Task<string> GetUserGender(string username)
+        {
+            return await _context.Users.Where(c => c.UserName == username)
+                .Select(x => x.Gender).FirstOrDefaultAsync();
         }
     }
 }
