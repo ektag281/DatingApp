@@ -81,11 +81,16 @@ namespace DatingApp.Api
             app.UseAuthentication();
             app.UseAuthorization();
 
+            //it will include html file
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<PresenceHub>("hubs/presence");
                 endpoints.MapHub<MessageHub>("hubs/message");
+                endpoints.MapFallbackToController("Index","Fallback");
             });
         }
     }
